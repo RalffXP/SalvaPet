@@ -1,0 +1,26 @@
+.divPrincipal{
+    border : 2px solid rgb(251, 251, 251);
+    margin-top: 40px;
+}
+
+.divNome{
+  margin-bottom: 40px; 
+}
+.inputs{
+    margin : 20px;
+}
+.txtcolor{
+    color:white;
+}
+.myinput{
+    background-color: white;
+    border-radius: 4px;
+    
+}
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}

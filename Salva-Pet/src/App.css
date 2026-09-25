@@ -1,0 +1,42 @@
+.rodape{
+     background-color: #fad817; 
+    width: 100%;
+    height: 90px;
+
+}
+
+.roda{
+   color: #7d4f05;
+    font-size: 2.5rem;
+    justify-content: flex-start;
+    margin: 20px;
+     font-family: Blippo, fantasy; 
+      padding: 0.1rem 0.8rem;
+      position: absolute;
+      left: 450px;
+      
+}
+.rod{
+   color: #7d4f05;
+    font-size: 2.5rem;
+    justify-content: flex-start;
+    margin: 20px;
+     font-family: Blippo, fantasy; 
+      padding: 0.1rem 0.8rem;
+      position: absolute;
+      left: 640px;
+      top: 510px;
+      
+}
+
+body{
+      background-color: 	rgb(240, 230, 140);
+}
+.txt{
+      color: white;
+}
+
+.input{
+      background-color: white;
+      border-radius: 5px;
+}
