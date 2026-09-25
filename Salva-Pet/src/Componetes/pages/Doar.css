@@ -1,0 +1,236 @@
+/* ============================================
+   Doar Page Styles
+   ============================================ */
+
+.doar-banner {
+  background: linear-gradient(135deg, var(--amarelo) 0%, #f5d000 100%);
+  padding: 50px 0;
+  text-align: center;
+}
+
+.doar-banner h1 {
+  font-size: 2.4rem;
+  color: var(--marrom-escuro);
+  margin-bottom: 8px;
+}
+
+.doar-banner p {
+  color: var(--marrom-claro);
+  font-size: 1.1rem;
+}
+
+.doar-content {
+  display: flex;
+  gap: 30px;
+  padding-top: 40px;
+  padding-bottom: 60px;
+  align-items: flex-start;
+}
+
+/* Info Panel */
+.doar-info-panel {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 100px;
+}
+
+.doar-info-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--sombra-suave);
+}
+
+.doar-info-card h3 {
+  color: var(--marrom);
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.doar-passos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  counter-reset: none;
+}
+
+.doar-passos li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.passo-num {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  background: var(--amarelo);
+  color: var(--marrom);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.doar-passos li strong {
+  color: var(--marrom-escuro);
+  font-size: 0.95rem;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.doar-passos li p {
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+}
+
+.doar-dicas {
+  background: var(--amarelo-claro);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.doar-dicas h4 {
+  color: var(--marrom);
+  margin-bottom: 12px;
+}
+
+.doar-dicas ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doar-dicas li {
+  font-size: 0.88rem;
+  color: var(--marrom-claro);
+  padding-left: 18px;
+  position: relative;
+}
+
+.doar-dicas li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--sucesso);
+  font-weight: 700;
+}
+
+/* Form */
+.doar-form {
+  flex: 1;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: var(--sombra-suave);
+}
+
+.form-titulo {
+  color: var(--marrom);
+  font-size: 1.3rem;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--amarelo-claro);
+}
+
+.form-mensagem {
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.msg-sucesso {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.msg-erro {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-grupo label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--marrom);
+}
+
+.form-full {
+  grid-column: 1 / -1;
+}
+
+.form-grupo textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-checkboxes {
+  grid-column: 1 / -1;
+  flex-direction: row !important;
+  gap: 24px !important;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  color: var(--marrom);
+  font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--amarelo);
+  cursor: pointer;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.05rem;
+  margin-top: 24px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .doar-content {
+    flex-direction: column;
+  }
+
+  .doar-info-panel {
+    flex: 0 0 auto;
+    position: static;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-checkboxes {
+    flex-direction: row !important;
+  }
+}

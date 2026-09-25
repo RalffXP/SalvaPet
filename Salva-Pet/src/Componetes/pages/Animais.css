@@ -1,0 +1,360 @@
+/* ============================================
+   Animais Page Styles
+   ============================================ */
+
+.animais-banner {
+  background: linear-gradient(135deg, var(--amarelo) 0%, #f5d000 100%);
+  padding: 50px 0;
+  text-align: center;
+}
+
+.animais-banner h1 {
+  font-size: 2.4rem;
+  color: var(--marrom-escuro);
+  margin-bottom: 8px;
+}
+
+.animais-banner p {
+  color: var(--marrom-claro);
+  font-size: 1.1rem;
+}
+
+.animais-content {
+  display: flex;
+  gap: 30px;
+  padding-top: 40px;
+  padding-bottom: 60px;
+  align-items: flex-start;
+}
+
+/* Filtros Panel */
+.filtros-panel {
+  flex: 0 0 280px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--sombra-suave);
+  position: sticky;
+  top: 100px;
+}
+
+.filtros-titulo {
+  font-size: 1.2rem;
+  color: var(--marrom);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--amarelo-claro);
+}
+
+.filtro-grupo {
+  margin-bottom: 18px;
+}
+
+.filtro-grupo label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--marrom);
+  margin-bottom: 6px;
+}
+
+.filtro-grupo select {
+  width: 100%;
+  padding: 10px 14px;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.filtro-botoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.filtro-botoes .btn {
+  flex: 1;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+/* Animals List */
+.animais-lista {
+  flex: 1;
+}
+
+.animais-header-lista {
+  margin-bottom: 20px;
+}
+
+.animais-count {
+  color: var(--texto-secundario);
+  font-size: 0.95rem;
+}
+
+.animais-grid-page {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.animal-card-page {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--sombra-suave);
+  cursor: pointer;
+  transition: var(--transicao);
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animal-card-page:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--sombra-forte);
+}
+
+.acp-img-wrapper {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.acp-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.animal-card-page:hover .acp-img-wrapper img {
+  transform: scale(1.06);
+}
+
+.acp-especie {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.acp-badge-vacina {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(46, 204, 113, 0.9);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.acp-info {
+  padding: 18px;
+}
+
+.acp-info h3 {
+  font-size: 1.25rem;
+  color: var(--marrom-escuro);
+  margin-bottom: 4px;
+}
+
+.acp-raca {
+  color: var(--texto-secundario);
+  font-size: 0.88rem;
+  margin-bottom: 10px;
+}
+
+.acp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.acp-local {
+  font-size: 0.85rem;
+  color: var(--texto-secundario);
+  margin-bottom: 14px;
+}
+
+/* Sem resultados */
+.sem-resultados {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--texto-secundario);
+}
+
+.sem-icone {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.sem-resultados h3 {
+  color: var(--marrom);
+  margin-bottom: 8px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeInUp 0.4s ease;
+}
+
+.modal-fechar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.08);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transicao);
+}
+
+.modal-fechar:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.modal-content {
+  display: flex;
+}
+
+.modal-img {
+  flex: 0 0 45%;
+}
+
+.modal-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+}
+
+.modal-info {
+  flex: 1;
+  padding: 32px;
+}
+
+.modal-info h2 {
+  font-size: 1.8rem;
+  color: var(--marrom-escuro);
+  margin-bottom: 4px;
+}
+
+.modal-raca {
+  color: var(--texto-secundario);
+  margin-bottom: 16px;
+}
+
+.modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.modal-info h4 {
+  color: var(--marrom);
+  font-size: 1rem;
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+
+.modal-descricao {
+  color: var(--texto-secundario);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.modal-contato {
+  background: var(--amarelo-claro);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+}
+
+.modal-contato h4 {
+  margin-top: 0;
+}
+
+.modal-contato p {
+  font-size: 0.9rem;
+  color: var(--marrom);
+  margin-bottom: 4px;
+}
+
+.btn-whatsapp {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .animais-content {
+    flex-direction: column;
+  }
+
+  .filtros-panel {
+    flex: 0 0 auto;
+    position: static;
+  }
+
+  .animais-grid-page {
+    grid-template-columns: 1fr;
+    max-width: 450px;
+    margin: 0 auto;
+  }
+
+  .modal-content {
+    flex-direction: column;
+  }
+
+  .modal-img {
+    flex: 0 0 250px;
+  }
+
+  .modal-img img {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  .modal-info {
+    padding: 24px;
+  }
+}

@@ -1,31 +1,17 @@
-import './App.css'
+import { Outlet } from 'react-router-dom';
+import Header from './Componetes/pages/Header/header';
+import Footer from './Componetes/pages/Footer/footer';
 
 function App() {
-
-  return (
-   <div className="corpo">
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-    <br></br>
-      <div className="rodape">
-        <h1 className="roda"> Salva Pet</h1>
-        <h1 className="rod"> 2026</h1>
-      </div>
-   </div>
-  )
+    return (
+        <>
+            <Header />
+            <main style={{ flex: 1 }}>
+                <Outlet />
+            </main>
+            <Footer />
+        </>
+    );
 }
 
-export default App
+export default App;

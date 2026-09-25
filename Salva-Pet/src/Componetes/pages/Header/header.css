@@ -1,42 +1,185 @@
+/* ============================================
+   Header Styles
+   ============================================ */
+.header {
+  background: linear-gradient(135deg, var(--amarelo) 0%, #f5d000 100%);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(125, 79, 5, 0.15);
+  backdrop-filter: blur(10px);
+}
 
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
 
-.back{
-     background-color: #fad817; /* amarelo */
-    width: 100%;
-    position: sticky;
+/* Logo */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  z-index: 1001;
+}
+
+.header-logo-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--marrom);
+  box-shadow: 0 2px 10px rgba(125, 79, 5, 0.2);
+  transition: var(--transicao);
+}
+
+.header-logo:hover .header-logo-img {
+  transform: scale(1.08) rotate(5deg);
+}
+
+.header-logo-text {
+  font-family: 'Blippo', 'Poppins', fantasy;
+  font-size: 2rem;
+  color: var(--marrom);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Navigation */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link {
+  color: var(--marrom);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 8px 16px;
+  border-radius: var(--radius-xl);
+  transition: var(--transicao);
+  white-space: nowrap;
+  text-decoration: none;
+  border: none;
+}
+
+.nav-link:hover {
+  background: rgba(125, 79, 5, 0.1);
+  transform: translateY(-1px);
+}
+
+.nav-link.ativo {
+  background: var(--marrom);
+  color: var(--amarelo);
+  font-weight: 600;
+}
+
+.btn-login {
+  background: var(--marrom) !important;
+  color: var(--amarelo) !important;
+  padding: 10px 24px !important;
+  font-weight: 600 !important;
+  margin-left: 8px;
+  box-shadow: 0 3px 12px rgba(125, 79, 5, 0.25);
+}
+
+.btn-login:hover {
+  background: var(--marrom-escuro) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 20px rgba(125, 79, 5, 0.35) !important;
+}
+
+/* Mobile Menu Toggle */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: var(--marrom);
+  border-radius: 3px;
+  transition: var(--transicao);
+}
+
+.menu-toggle.ativo span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 6px);
+}
+
+.menu-toggle.ativo span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.ativo span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -6px);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  .header-nav {
+    position: fixed;
     top: 0;
-    box-shadow: 0 2px 10px rgba(255, 246, 192, 0.1);
-    z-index: 1000;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--amarelo) 0%, #f5d000 100%);
+    flex-direction: column;
+    padding: 100px 30px 40px;
+    gap: 8px;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
+    align-items: stretch;
+  }
+
+  .header-nav.aberto {
+    right: 0;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    padding: 14px 20px;
+    border-radius: var(--radius-md);
+    text-align: left;
+  }
+
+  .btn-login {
+    margin-left: 0 !important;
+    margin-top: 12px;
+    text-align: center !important;
+  }
 }
 
-a{
-      color: #7d4f05;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    padding: 0.1rem 0.8rem;
-    border: 3px solid rgb(135, 76, 4);
-    display: inline-block;
-    justify-content: flex-start;
-    margin : 10px;
-    border-radius: 5px;
+@media (max-width: 480px) {
+  .header-logo-text {
+    font-size: 1.5rem;
+  }
 
-}
-.img{
-    width: 150px;
-    height: 100px;
-    border-radius: 50%;
-    margin: 10px;
-    position: absolute;
-    top: -14px;
-    left: -10px;
-}
-.missao{
-    color: #7d4f05;
-    font-size: 3rem;
-    position: absolute;
-    left: 140px;
-    top: -1px;
-    font-family: Blippo, fantasy; 
-    
+  .header-logo-img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .header-container {
+    height: 68px;
+  }
 }

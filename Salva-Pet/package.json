@@ -1,13 +1,14 @@
 {
   "name": "salva-pet",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "ts-node-dev --respawn --transpile-only src/Back\\ Ends/serve.ts"
   },
   "dependencies": {
     "cors": "^2.8.6",

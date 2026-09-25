@@ -1,22 +1,35 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Teste from './Componetes/pages/Contato.tsx'
-import Contato from './Componetes/pages/Contato.tsx'
-import Header from './Componetes/pages/Header/header.tsx'
-import Login from './Componetes/pages/Login.tsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import './index.css';
+import App from './App';
+import Home from './Componetes/pages/Home';
+import Animais from './Componetes/pages/Animais';
+import Doar from './Componetes/pages/Doar';
+import Sobre from './Componetes/pages/Sobre';
+import Contato from './Componetes/pages/Contato';
+import Login from './Componetes/pages/Login';
+import Avaliar from './Componetes/pages/Avaliar';
 
 const router = createBrowserRouter([
-  {path: '/', element: <App />},
-  {path: '/contato', element: <Contato/>},
-  {path: '/login', element: <Login/>}
-])
+    {
+        path: '/',
+        element: <App />,
+        children: [
+            { index: true, element: <Home /> },
+            { path: 'animais', element: <Animais /> },
+            { path: 'doar', element: <Doar /> },
+            { path: 'sobre', element: <Sobre /> },
+            { path: 'contato', element: <Contato /> },
+            { path: 'login', element: <Login /> },
+            { path: 'cadastro', element: <Login /> },
+            { path: 'avaliar', element: <Avaliar /> },
+        ],
+    },
+]);
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Header />
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
+    <StrictMode>
+        <RouterProvider router={router} />
+    </StrictMode>
+);
