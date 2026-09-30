@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/log.png" alt="SalvaPet Logo" width="180">
+  <img src="https://github.com/RalffXP/SalvaPet/blob/main/public/log.png" alt="SalvaPet Logo" width="180">
 </p>
 
 <h1 align="center">🐾 SalvaPet</h1>
@@ -554,6 +554,7 @@ erDiagram
 |---|---|
 | **Desenvolvimento** | Ralff |
 | **Gerente de Projetos** | Vinícius Lima |
+| ** Os burros **| Yasmin Colares,Yasmim Mizael, Ana Andrade, Brayan, Larrisa Gabrielli |
 
 **Instituição:** ETEC de Presidente Venceslau  
 **Curso:** 3º Desenvolvimento de Sistemas  
