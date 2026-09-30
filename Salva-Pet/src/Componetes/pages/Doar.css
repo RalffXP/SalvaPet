@@ -19,6 +19,26 @@
   font-size: 1.1rem;
 }
 
+.doar-alerta {
+  position: sticky;
+  top: 80px;
+  z-index: 999;
+  background: linear-gradient(135deg, #dff7e8 0%, #c9f2d4 100%);
+  border-bottom: 2px solid #9ad7ae;
+  color: #1d5a33;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 14px 0;
+  box-shadow: 0 4px 14px rgba(38, 126, 72, 0.08);
+}
+
+.doar-alerta .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 .doar-content {
   display: flex;
   gap: 30px;

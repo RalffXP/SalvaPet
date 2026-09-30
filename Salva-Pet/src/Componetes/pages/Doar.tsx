@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Doar.css';
 
 function Doar() {
@@ -18,6 +18,17 @@ function Doar() {
     });
     const [mensagem, setMensagem] = useState('');
     const [sucesso, setSucesso] = useState(false);
+
+    useEffect(() => {
+        if (!sucesso || !mensagem) return;
+
+        const timer = setTimeout(() => {
+            setMensagem('');
+            setSucesso(false);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+    }, [sucesso, mensagem]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -71,6 +82,14 @@ function Doar() {
                     <p>Ajude um pet a encontrar um novo lar cheio de amor</p>
                 </div>
             </section>
+
+            {sucesso && mensagem && (
+                <div className="doar-alerta">
+                    <div className="container">
+                        <strong>✅ Cadastro concluído:</strong> {mensagem}
+                    </div>
+                </div>
+            )}
 
             <div className="container doar-content">
                 <div className="doar-info-panel">
