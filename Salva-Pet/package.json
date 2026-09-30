@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "tsx watch \"src/Back Ends/serve.ts\""
+    "server": "npx tsx watch \"src/Back Ends/serve.ts\""
   },
   "dependencies": {
     "cors": "^2.8.6",
