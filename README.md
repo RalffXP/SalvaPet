@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/RalffXP/SalvaPet/blob/main/public/log.png" alt="SalvaPet Logo" width="180">
+  <img src="https://github.com/RalffXP/SalvaPet/blob/main/Salva-Pet/public/log.png" alt="SalvaPet Logo" width="180">
 </p>
 
 <h1 align="center">🐾 SalvaPet</h1>
