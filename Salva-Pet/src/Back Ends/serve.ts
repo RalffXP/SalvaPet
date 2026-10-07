@@ -1,12 +1,100 @@
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
+import bcrypt from 'bcryptjs';
 import { pool } from './database';
+import { PASTA_UPLOADS, receberImagem, removerImagem, urlPublica } from './upload';
+
+// Custo do bcrypt (2^10 iterações). Quanto maior, mais seguro e mais lento.
+const SALT_ROUNDS = 10;
+
+// Hashes bcrypt sempre começam com $2a$, $2b$ ou $2y$
+const ehHashBcrypt = (valor: string) => /^\$2[aby]\$\d{2}\$/.test(valor);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Fotos enviadas pelos usuários ficam acessíveis em /uploads/<arquivo>
+app.use('/uploads', express.static(PASTA_UPLOADS, { maxAge: '7d' }));
+
+// ============================================
+// AUTORIZAÇÃO (perfil admin / dono do animal)
+// ============================================
+// O frontend envia o id do usuário logado no cabeçalho "x-usuario-id".
+// O perfil é sempre consultado no banco, nunca confiado ao cliente.
+// Obs.: em produção, substituir por um token assinado (ex.: JWT).
+
+type UsuarioLogado = { id: number; nome: string; perfil: 'usuario' | 'admin' };
+
+async function obterUsuarioLogado(req: Request): Promise<UsuarioLogado | null> {
+    const id = Number(req.header('x-usuario-id'));
+    if (!id) return null;
+    const [rows]: any = await pool.query('SELECT id, nome, perfil FROM usuarios WHERE id = ?', [id]);
+    return rows.length ? rows[0] : null;
+}
+
+// Verifica se o usuário logado pode gerenciar o animal (admin ou quem cadastrou)
+async function verificarPermissaoAnimal(req: Request, res: Response): Promise<boolean> {
+    const usuario = await obterUsuarioLogado(req);
+    if (!usuario) {
+        res.status(401).json({ mensagem: 'Faça login para continuar' });
+        return false;
+    }
+    const [rows]: any = await pool.query('SELECT usuario_id FROM animais WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) {
+        res.status(404).json({ mensagem: 'Animal não encontrado' });
+        return false;
+    }
+    if (usuario.perfil !== 'admin' && rows[0].usuario_id !== usuario.id) {
+        res.status(403).json({ mensagem: 'Você não tem permissão para gerenciar este animal' });
+        return false;
+    }
+    return true;
+}
+
+// ============================================
+// ROTAS DO PAINEL ADMINISTRATIVO
+// ============================================
+
+// Lista animais do painel: admin vê todos, usuário comum vê apenas os seus
+app.get('/api/painel/animais', async (req: Request, res: Response) => {
+    try {
+        const usuario = await obterUsuarioLogado(req);
+        if (!usuario) {
+            return res.status(401).json({ mensagem: 'Faça login para continuar' });
+        }
+
+        let query = 'SELECT a.*, u.nome as nome_dono, u.email as email_dono FROM animais a JOIN usuarios u ON a.usuario_id = u.id';
+        const params: any[] = [];
+        if (usuario.perfil !== 'admin') {
+            query += ' WHERE a.usuario_id = ?';
+            params.push(usuario.id);
+        }
+        query += ' ORDER BY a.criado_em DESC';
+
+        const [rows] = await pool.query(query, params);
+        res.json({ perfil: usuario.perfil, animais: rows });
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao carregar painel', erro: error });
+    }
+});
+
+// Alterar apenas o status (ex.: marcar como adotado)
+app.patch('/api/animais/:id/status', async (req: Request, res: Response) => {
+    const { status } = req.body;
+    if (!['disponivel', 'em_analise', 'adotado'].includes(status)) {
+        return res.status(400).json({ mensagem: 'Status inválido' });
+    }
+    try {
+        if (!(await verificarPermissaoAnimal(req, res))) return;
+        await pool.query('UPDATE animais SET status = ? WHERE id = ?', [status, req.params.id]);
+        res.json({ mensagem: status === 'adotado' ? 'Animal marcado como adotado! 🎉' : 'Status atualizado com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao atualizar status', erro: error });
+    }
+});
 
 // ============================================
 // ROTAS DE ANIMAIS
@@ -69,21 +157,29 @@ app.get('/api/animais/:id', async (req: Request, res: Response) => {
     }
 });
 
-// Cadastrar novo animal
-app.post('/api/animais', async (req: Request, res: Response) => {
-    const { nome, especie, raca, idade, porte, sexo, descricao, imagem_url, cidade, estado, vacinado, castrado, usuario_id } = req.body;
+// Cadastrar novo animal (multipart/form-data, foto opcional no campo "imagem")
+app.post('/api/animais', receberImagem, async (req: Request, res: Response) => {
+    const { nome, especie, raca, idade, porte, sexo, descricao, cidade, estado } = req.body;
+    // FormData envia tudo como texto: converte "true"/"false" para booleano
+    const vacinado = req.body.vacinado === true || req.body.vacinado === 'true';
+    const castrado = req.body.castrado === true || req.body.castrado === 'true';
+    // O dono do animal é o usuário logado (cabeçalho x-usuario-id); usa o corpo como alternativa
+    const usuario_id = Number(req.header('x-usuario-id')) || req.body.usuario_id;
+    const imagem_url = req.file ? urlPublica(req, req.file.filename) : null;
 
     if (!nome || !especie || !sexo || !usuario_id) {
+        removerImagem(imagem_url);
         return res.status(400).json({ mensagem: 'Campos obrigatórios: nome, especie, sexo, usuario_id' });
     }
 
     try {
         const [result]: any = await pool.query(
             'INSERT INTO animais (nome, especie, raca, idade, porte, sexo, descricao, imagem_url, cidade, estado, vacinado, castrado, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [nome, especie, raca, idade, porte, sexo, descricao, imagem_url, cidade, estado, vacinado || false, castrado || false, usuario_id]
+            [nome, especie, raca, idade, porte, sexo, descricao, imagem_url, cidade, estado, vacinado, castrado, usuario_id]
         );
-        res.status(201).json({ id: result.insertId, mensagem: 'Animal cadastrado com sucesso!' });
+        res.status(201).json({ id: result.insertId, imagem_url, mensagem: 'Animal cadastrado com sucesso!' });
     } catch (error) {
+        removerImagem(imagem_url); // não deixa arquivo órfão se o INSERT falhar
         res.status(500).json({ mensagem: 'Erro ao cadastrar animal', erro: error });
     }
 });
@@ -93,6 +189,7 @@ app.put('/api/animais/:id', async (req: Request, res: Response) => {
     const { nome, especie, raca, idade, porte, sexo, descricao, imagem_url, cidade, estado, vacinado, castrado, status } = req.body;
 
     try {
+        if (!(await verificarPermissaoAnimal(req, res))) return;
         await pool.query(
             'UPDATE animais SET nome=?, especie=?, raca=?, idade=?, porte=?, sexo=?, descricao=?, imagem_url=?, cidade=?, estado=?, vacinado=?, castrado=?, status=? WHERE id=?',
             [nome, especie, raca, idade, porte, sexo, descricao, imagem_url, cidade, estado, vacinado, castrado, status, req.params.id]
@@ -106,7 +203,10 @@ app.put('/api/animais/:id', async (req: Request, res: Response) => {
 // Deletar animal
 app.delete('/api/animais/:id', async (req: Request, res: Response) => {
     try {
+        if (!(await verificarPermissaoAnimal(req, res))) return;
+        const [rows]: any = await pool.query('SELECT imagem_url FROM animais WHERE id = ?', [req.params.id]);
         await pool.query('DELETE FROM animais WHERE id = ?', [req.params.id]);
+        removerImagem(rows[0]?.imagem_url); // apaga a foto do disco, se foi enviada pelo site
         res.json({ mensagem: 'Animal removido com sucesso!' });
     } catch (error) {
         res.status(500).json({ mensagem: 'Erro ao remover animal', erro: error });
@@ -132,9 +232,10 @@ app.post('/api/usuarios', async (req: Request, res: Response) => {
             return res.status(409).json({ mensagem: 'Email já cadastrado' });
         }
 
+        const senhaHash = await bcrypt.hash(senha, SALT_ROUNDS);
         const [result]: any = await pool.query(
             'INSERT INTO usuarios (nome, email, senha, telefone, cidade, estado, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [nome, email, senha, telefone, cidade, estado, tipo || 'ambos']
+            [nome, email, senhaHash, telefone, cidade, estado, tipo || 'ambos']
         );
         res.status(201).json({ id: result.insertId, mensagem: 'Usuário cadastrado com sucesso!' });
     } catch (error) {
@@ -153,8 +254,18 @@ app.post('/api/login', async (req: Request, res: Response) => {
         }
 
         const usuario = rows[0];
-        // Comparação simples de senha (em produção, usar bcrypt)
-        if (usuario.senha !== senha) {
+        let senhaCorreta = false;
+
+        if (ehHashBcrypt(usuario.senha)) {
+            senhaCorreta = await bcrypt.compare(senha ?? '', usuario.senha);
+        } else if (usuario.senha === senha) {
+            // Senha antiga em texto puro: aceita uma última vez e já converte para hash
+            senhaCorreta = true;
+            const novoHash = await bcrypt.hash(senha, SALT_ROUNDS);
+            await pool.query('UPDATE usuarios SET senha = ? WHERE id = ?', [novoHash, usuario.id]);
+        }
+
+        if (!senhaCorreta) {
             return res.status(401).json({ mensagem: 'Email ou senha incorretos' });
         }
 
@@ -183,7 +294,7 @@ app.get('/api/usuarios/:id', async (req: Request, res: Response) => {
 // ============================================
 
 // Listar avaliações
-app.get('/api/avaliacoes', async (req: Request, res: Response) => {
+app.get('/api/avaliacoes', async (_req: Request, res: Response) => {
     try {
         const [rows] = await pool.query(
             'SELECT av.*, u.nome as nome_usuario FROM avaliacoes av LEFT JOIN usuarios u ON av.usuario_id = u.id ORDER BY av.criado_em DESC'
@@ -214,7 +325,7 @@ app.post('/api/avaliacoes', async (req: Request, res: Response) => {
 });
 
 // Média das avaliações
-app.get('/api/avaliacoes/media', async (req: Request, res: Response) => {
+app.get('/api/avaliacoes/media', async (_req: Request, res: Response) => {
     try {
         const [rows]: any = await pool.query('SELECT AVG(nota) as media, COUNT(*) as total FROM avaliacoes');
         res.json(rows[0]);
@@ -269,7 +380,7 @@ app.get('/api/mensagens/:usuario_id', async (req: Request, res: Response) => {
 });
 
 // Estatísticas gerais
-app.get('/api/estatisticas', async (req: Request, res: Response) => {
+app.get('/api/estatisticas', async (_req: Request, res: Response) => {
     try {
         const [animais]: any = await pool.query('SELECT COUNT(*) as total FROM animais WHERE status = "disponivel"');
         const [adotados]: any = await pool.query('SELECT COUNT(*) as total FROM animais WHERE status = "adotado"');

@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { salvarUsuario } from '../auth';
 import './Login.css';
 
 function Login() {
+    const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
         nome: '',
@@ -36,7 +39,8 @@ function Login() {
                 if (res.ok) {
                     setMensagem('✅ Login realizado com sucesso!');
                     setSucesso(true);
-                    localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                    salvarUsuario(data.usuario);
+                    setTimeout(() => navigate('/painel'), 800);
                 } else {
                     setMensagem(data.mensagem || 'Email ou senha incorretos');
                     setSucesso(false);

@@ -10,6 +10,7 @@ import Sobre from './Componetes/pages/Sobre';
 import Contato from './Componetes/pages/Contato';
 import Login from './Componetes/pages/Login';
 import Avaliar from './Componetes/pages/Avaliar';
+import Painel from './Componetes/pages/Painel';
 
 const router = createBrowserRouter([
     {
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
             { path: 'login', element: <Login /> },
             { path: 'cadastro', element: <Login /> },
             { path: 'avaliar', element: <Avaliar /> },
+            { path: 'painel', element: <Painel /> },
         ],
     },
 ]);

@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   cidade VARCHAR(100),
   estado VARCHAR(2),
   tipo ENUM('adotante', 'doador', 'ambos') DEFAULT 'ambos',
+  perfil ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario',
   foto_url VARCHAR(500),
   criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
   atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -81,10 +82,16 @@ CREATE TABLE IF NOT EXISTS mensagens (
 -- ============================================
 -- Dados de exemplo
 -- ============================================
+-- Senhas armazenadas com bcrypt (nunca em texto puro).
+-- Usuários de exemplo: senha 123456
 INSERT INTO usuarios (nome, email, senha, telefone, cidade, estado, tipo) VALUES
-('Maria Silva', 'maria@email.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUV', '(18) 99999-0001', 'Presidente Venceslau', 'SP', 'doador'),
-('João Santos', 'joao@email.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUV', '(18) 99999-0002', 'Presidente Prudente', 'SP', 'adotante'),
-('Ana Oliveira', 'ana@email.com', '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUV', '(18) 99999-0003', 'Presidente Venceslau', 'SP', 'ambos');
+('Maria Silva', 'maria@email.com', '$2b$10$9YY.hAm/QVz86GMdPtGIJueu3RQS85dPKI6RifXKSGeJCAZZonpGi', '(18) 99999-0001', 'Presidente Venceslau', 'SP', 'doador'),
+('João Santos', 'joao@email.com', '$2b$10$9YY.hAm/QVz86GMdPtGIJueu3RQS85dPKI6RifXKSGeJCAZZonpGi', '(18) 99999-0002', 'Presidente Prudente', 'SP', 'adotante'),
+('Ana Oliveira', 'ana@email.com', '$2b$10$9YY.hAm/QVz86GMdPtGIJueu3RQS85dPKI6RifXKSGeJCAZZonpGi', '(18) 99999-0003', 'Presidente Venceslau', 'SP', 'ambos');
+
+-- Administrador padrão (email: admin@salvapet.com / senha: admin123)
+INSERT INTO usuarios (nome, email, senha, telefone, cidade, estado, tipo, perfil) VALUES
+('Administrador', 'admin@salvapet.com', '$2b$10$bkB2NYxsHgZZLRSMd6Y0SOCNSswqRXsh0KNkV40WIaCNWNnjzrLkm', '(18) 99999-0000', 'Presidente Venceslau', 'SP', 'ambos', 'admin');
 
 INSERT INTO animais (nome, especie, raca, idade, porte, sexo, descricao, imagem_url, cidade, estado, vacinado, castrado, status, usuario_id) VALUES
 ('Rex', 'cachorro', 'Vira-lata', '2 anos', 'medio', 'macho', 'Cachorro muito dócil e brincalhão, ótimo com crianças.', 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400', 'Presidente Venceslau', 'SP', TRUE, TRUE, 'disponivel', 1),
@@ -98,3 +105,16 @@ INSERT INTO avaliacoes (usuario_id, nota, comentario) VALUES
 (1, 5, 'Site maravilhoso! Consegui encontrar um lar para meus gatinhos rapidamente.'),
 (2, 4, 'Muito fácil de usar, adorei a iniciativa!'),
 (3, 5, 'Plataforma excelente para quem quer ajudar os animais.');
+
+-- ============================================
+-- MIGRAÇÃO (para bancos já existentes)
+-- Execute apenas se a tabela usuarios já existia antes do painel admin:
+-- ============================================
+-- ALTER TABLE usuarios ADD COLUMN perfil ENUM('usuario', 'admin') NOT NULL DEFAULT 'usuario' AFTER tipo;
+-- INSERT INTO usuarios (nome, email, senha, cidade, estado, tipo, perfil)
+--   VALUES ('Administrador', 'admin@salvapet.com', '$2b$10$bkB2NYxsHgZZLRSMd6Y0SOCNSswqRXsh0KNkV40WIaCNWNnjzrLkm', 'Presidente Venceslau', 'SP', 'ambos', 'admin');
+-- Ou promova um usuário existente:
+-- UPDATE usuarios SET perfil = 'admin' WHERE email = 'seu@email.com';
+--
+-- Senhas antigas em texto puro: rode "npm run migrar-senhas" para criptografá-las
+-- (elas também são convertidas automaticamente no próximo login do usuário).
