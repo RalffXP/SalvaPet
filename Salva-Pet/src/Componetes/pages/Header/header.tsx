@@ -45,6 +45,14 @@ function Header() {
                     <span></span>
                 </button>
 
+                {menuAberto && (
+                    <div
+                        className="header-overlay"
+                        onClick={() => setMenuAberto(false)}
+                        aria-hidden="true"
+                    />
+                )}
+
                 <nav className={`header-nav ${menuAberto ? 'aberto' : ''}`}>
                     <Link
                         to="/"

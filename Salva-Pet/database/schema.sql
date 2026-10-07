@@ -80,6 +80,19 @@ CREATE TABLE IF NOT EXISTS mensagens (
 ) ENGINE=InnoDB;
 
 -- ============================================
+-- Tabela: contatos (fale conosco / suporte)
+-- ============================================
+CREATE TABLE IF NOT EXISTS contatos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(120) NOT NULL,
+  email VARCHAR(180) NOT NULL,
+  assunto VARCHAR(100) NOT NULL,
+  mensagem TEXT NOT NULL,
+  lida BOOLEAN DEFAULT FALSE,
+  criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ============================================
 -- Dados de exemplo
 -- ============================================
 -- Senhas armazenadas com bcrypt (nunca em texto puro).

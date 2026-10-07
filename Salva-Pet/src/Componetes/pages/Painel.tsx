@@ -23,6 +23,16 @@ type AnimalPainel = {
     criado_em: string;
 };
 
+type MensagemContato = {
+    id: number;
+    nome: string;
+    email: string;
+    assunto: string;
+    mensagem: string;
+    lida: boolean | number;
+    criado_em: string;
+};
+
 type Toast = { texto: string; tipo: 'sucesso' | 'erro' } | null;
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -37,7 +47,9 @@ function Painel() {
     const navigate = useNavigate();
     const usuario = getUsuarioLogado();
 
+    const [abaPrincipal, setAbaPrincipal] = useState<'animais' | 'contatos'>('animais');
     const [animais, setAnimais] = useState<AnimalPainel[]>([]);
+    const [contatos, setContatos] = useState<MensagemContato[]>([]);
     const [perfil, setPerfil] = useState<'usuario' | 'admin'>(usuario?.perfil ?? 'usuario');
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState('');
@@ -58,6 +70,15 @@ function Painel() {
             if (!res.ok) throw new Error(data.mensagem || 'Erro ao carregar painel');
             setAnimais(data.animais);
             setPerfil(data.perfil);
+
+            // Se for admin, carregar também as mensagens de contato
+            if (data.perfil === 'admin') {
+                const resContatos = await fetch(`${API_URL}/api/contato`, { headers: authHeaders() });
+                if (resContatos.ok) {
+                    const dataContatos = await resContatos.json();
+                    setContatos(dataContatos);
+                }
+            }
         } catch (e) {
             setErro(e instanceof Error && e.message !== 'Failed to fetch' ? e.message : 'Servidor indisponível. Tente novamente mais tarde.');
         } finally {
@@ -85,7 +106,8 @@ function Painel() {
         disponivel: animais.filter(a => a.status === 'disponivel').length,
         em_analise: animais.filter(a => a.status === 'em_analise').length,
         adotado: animais.filter(a => a.status === 'adotado').length,
-    }), [animais]);
+        mensagensNaoLidas: contatos.filter(c => !c.lida).length,
+    }), [animais, contatos]);
 
     const animaisFiltrados = useMemo(() => {
         const termo = busca.trim().toLowerCase();
@@ -136,6 +158,21 @@ function Painel() {
         }
     };
 
+    const marcarMensagemLida = async (id: number) => {
+        try {
+            const res = await fetch(`${API_URL}/api/contato/${id}/lida`, {
+                method: 'PATCH',
+                headers: authHeaders()
+            });
+            if (res.ok) {
+                setContatos(prev => prev.map(c => c.id === id ? { ...c, lida: true } : c));
+                setToast({ texto: 'Mensagem marcada como lida.', tipo: 'sucesso' });
+            }
+        } catch {
+            setToast({ texto: 'Erro ao atualizar mensagem.', tipo: 'erro' });
+        }
+    };
+
     if (!usuario) return null;
 
     return (
@@ -150,7 +187,7 @@ function Painel() {
                         <p>
                             Olá, <strong>{usuario.nome.split(' ')[0]}</strong>!{' '}
                             {isAdmin
-                                ? 'Você pode gerenciar todos os animais cadastrados na plataforma.'
+                                ? 'Gerencie animais, aprovações e responda mensagens de contato dos usuários.'
                                 : 'Gerencie os animais que você cadastrou para adoção.'}
                         </p>
                     </div>
@@ -161,129 +198,212 @@ function Painel() {
             </section>
 
             <div className="container painel-conteudo">
-                <div className="painel-stats">
-                    <div className="stat-card">
-                        <span className="stat-icone">📋</span>
-                        <div><strong>{estatisticas.total}</strong><span>Total</span></div>
+                {/* Abas Superiores para Administrador: Animais vs Mensagens */}
+                {isAdmin && (
+                    <div className="painel-seletor-abas">
+                        <button
+                            className={`btn-aba-principal ${abaPrincipal === 'animais' ? 'ativo' : ''}`}
+                            onClick={() => setAbaPrincipal('animais')}
+                        >
+                            🐾 Gerenciar Animais ({animais.length})
+                        </button>
+                        <button
+                            className={`btn-aba-principal ${abaPrincipal === 'contatos' ? 'ativo' : ''}`}
+                            onClick={() => setAbaPrincipal('contatos')}
+                        >
+                            📬 Mensagens de Contato ({contatos.length})
+                            {estatisticas.mensagensNaoLidas > 0 && (
+                                <span className="badge-nao-lidas">{estatisticas.mensagensNaoLidas} novas</span>
+                            )}
+                        </button>
                     </div>
-                    <div className="stat-card disponivel">
-                        <span className="stat-icone">🏠</span>
-                        <div><strong>{estatisticas.disponivel}</strong><span>Disponíveis</span></div>
-                    </div>
-                    <div className="stat-card em_analise">
-                        <span className="stat-icone">⏳</span>
-                        <div><strong>{estatisticas.em_analise}</strong><span>Em análise</span></div>
-                    </div>
-                    <div className="stat-card adotado">
-                        <span className="stat-icone">💛</span>
-                        <div><strong>{estatisticas.adotado}</strong><span>Adotados</span></div>
-                    </div>
-                </div>
+                )}
 
-                <div className="painel-toolbar">
-                    <div className="painel-tabs" role="tablist">
-                        {(['todos', 'disponivel', 'em_analise', 'adotado'] as const).map(s => (
-                            <button
-                                key={s}
-                                id={`painel-filtro-${s}`}
-                                role="tab"
-                                aria-selected={filtroStatus === s}
-                                className={`painel-tab ${filtroStatus === s ? 'ativo' : ''}`}
-                                onClick={() => setFiltroStatus(s)}
-                            >
-                                {s === 'todos' ? 'Todos' : STATUS_LABEL[s]}
-                            </button>
-                        ))}
-                    </div>
-                    <input
-                        id="painel-busca"
-                        type="search"
-                        className="painel-busca"
-                        placeholder={isAdmin ? '🔎 Buscar por nome, raça, cidade ou responsável...' : '🔎 Buscar por nome, raça ou cidade...'}
-                        value={busca}
-                        onChange={e => setBusca(e.target.value)}
-                    />
-                </div>
+                {abaPrincipal === 'animais' ? (
+                    <>
+                        <div className="painel-stats">
+                            <div className="stat-card">
+                                <span className="stat-icone">📋</span>
+                                <div><strong>{estatisticas.total}</strong><span>Total</span></div>
+                            </div>
+                            <div className="stat-card disponivel">
+                                <span className="stat-icone">🏠</span>
+                                <div><strong>{estatisticas.disponivel}</strong><span>Disponíveis</span></div>
+                            </div>
+                            <div className="stat-card em_analise">
+                                <span className="stat-icone">⏳</span>
+                                <div><strong>{estatisticas.em_analise}</strong><span>Em análise</span></div>
+                            </div>
+                            <div className="stat-card adotado">
+                                <span className="stat-icone">💛</span>
+                                <div><strong>{estatisticas.adotado}</strong><span>Adotados</span></div>
+                            </div>
+                        </div>
 
-                {carregando ? (
-                    <div className="painel-grid">
-                        {[1, 2, 3].map(i => <div key={i} className="painel-card skeleton" />)}
-                    </div>
-                ) : erro ? (
-                    <div className="painel-vazio">
-                        <span>⚠️</span>
-                        <p>{erro}</p>
-                        <button className="btn btn-secundario" onClick={carregar}>Tentar novamente</button>
-                    </div>
-                ) : animaisFiltrados.length === 0 ? (
-                    <div className="painel-vazio">
-                        <span>🐾</span>
-                        <p>{animais.length === 0 ? 'Nenhum animal cadastrado ainda.' : 'Nenhum animal encontrado com esses filtros.'}</p>
-                        {animais.length === 0 && <Link to="/doar" className="btn btn-primario">Cadastrar meu primeiro animal</Link>}
-                    </div>
+                        <div className="painel-toolbar">
+                            <div className="painel-tabs" role="tablist">
+                                {(['todos', 'disponivel', 'em_analise', 'adotado'] as const).map(s => (
+                                    <button
+                                        key={s}
+                                        id={`painel-filtro-${s}`}
+                                        role="tab"
+                                        aria-selected={filtroStatus === s}
+                                        className={`painel-tab ${filtroStatus === s ? 'ativo' : ''}`}
+                                        onClick={() => setFiltroStatus(s)}
+                                    >
+                                        {s === 'todos' ? 'Todos' : STATUS_LABEL[s]}
+                                    </button>
+                                ))}
+                            </div>
+                            <input
+                                id="painel-busca"
+                                type="search"
+                                className="painel-busca"
+                                placeholder={isAdmin ? '🔎 Buscar por nome, raça, cidade ou responsável...' : '🔎 Buscar por nome, raça ou cidade...'}
+                                value={busca}
+                                onChange={e => setBusca(e.target.value)}
+                            />
+                        </div>
+
+                        {carregando ? (
+                            <div className="painel-grid">
+                                {[1, 2, 3].map(i => <div key={i} className="painel-card skeleton" />)}
+                            </div>
+                        ) : erro ? (
+                            <div className="painel-vazio">
+                                <span>⚠️</span>
+                                <p>{erro}</p>
+                                <button className="btn btn-secundario" onClick={carregar}>Tentar novamente</button>
+                            </div>
+                        ) : animaisFiltrados.length === 0 ? (
+                            <div className="painel-vazio">
+                                <span>🐾</span>
+                                <p>{animais.length === 0 ? 'Nenhum animal cadastrado ainda.' : 'Nenhum animal encontrado com esses filtros.'}</p>
+                                {animais.length === 0 && <Link to="/doar" className="btn btn-primario">Cadastrar meu primeiro animal</Link>}
+                            </div>
+                        ) : (
+                            <div className="painel-grid">
+                                {animaisFiltrados.map(animal => {
+                                    const ocupado = processandoId === animal.id;
+                                    const ehDono = animal.usuario_id === usuario.id;
+                                    return (
+                                        <article key={animal.id} className={`painel-card status-${animal.status}`}>
+                                            <div className="painel-card-img">
+                                                {animal.imagem_url
+                                                    ? <img src={animal.imagem_url} alt={animal.nome} loading="lazy" />
+                                                    : <div className="painel-card-sem-img">{ESPECIE_EMOJI[animal.especie]}</div>}
+                                                <span className={`status-badge ${animal.status}`}>{STATUS_LABEL[animal.status]}</span>
+                                                {animal.status === 'adotado' && <div className="selo-adotado">ADOTADO 💛</div>}
+                                            </div>
+
+                                            <div className="painel-card-corpo">
+                                                <h3>{ESPECIE_EMOJI[animal.especie]} {animal.nome}</h3>
+                                                <p className="painel-card-info">
+                                                    {[animal.raca, animal.idade, animal.sexo === 'macho' ? '♂ Macho' : '♀ Fêmea'].filter(Boolean).join(' • ')}
+                                                </p>
+                                                {(animal.cidade || animal.estado) && (
+                                                    <p className="painel-card-local">📍 {[animal.cidade, animal.estado].filter(Boolean).join(' - ')}</p>
+                                                )}
+                                                {isAdmin && (
+                                                    <p className="painel-card-dono" title={animal.email_dono}>
+                                                        👤 {ehDono ? 'Cadastrado por você' : `Cadastrado por ${animal.nome_dono}`}
+                                                    </p>
+                                                )}
+
+                                                <div className="painel-card-acoes">
+                                                    {animal.status !== 'adotado' ? (
+                                                        <button
+                                                            id={`btn-adotado-${animal.id}`}
+                                                            className="acao-btn acao-adotado"
+                                                            disabled={ocupado}
+                                                            onClick={() => alterarStatus(animal, 'adotado')}
+                                                        >
+                                                            {ocupado ? '...' : '💛 Marcar como adotado'}
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            id={`btn-disponivel-${animal.id}`}
+                                                            className="acao-btn acao-reverter"
+                                                            disabled={ocupado}
+                                                            onClick={() => alterarStatus(animal, 'disponivel')}
+                                                        >
+                                                            {ocupado ? '...' : '↩️ Voltar para adoção'}
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        id={`btn-excluir-${animal.id}`}
+                                                        className="acao-btn acao-excluir"
+                                                        disabled={ocupado}
+                                                        onClick={() => setAnimalExcluir(animal)}
+                                                        aria-label={`Excluir ${animal.nome}`}
+                                                    >
+                                                        🗑️ Excluir
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </>
                 ) : (
-                    <div className="painel-grid">
-                        {animaisFiltrados.map(animal => {
-                            const ocupado = processandoId === animal.id;
-                            const ehDono = animal.usuario_id === usuario.id;
-                            return (
-                                <article key={animal.id} className={`painel-card status-${animal.status}`}>
-                                    <div className="painel-card-img">
-                                        {animal.imagem_url
-                                            ? <img src={animal.imagem_url} alt={animal.nome} loading="lazy" />
-                                            : <div className="painel-card-sem-img">{ESPECIE_EMOJI[animal.especie]}</div>}
-                                        <span className={`status-badge ${animal.status}`}>{STATUS_LABEL[animal.status]}</span>
-                                        {animal.status === 'adotado' && <div className="selo-adotado">ADOTADO 💛</div>}
-                                    </div>
+                    /* Seção de Mensagens de Contato */
+                    <div className="painel-contatos-container">
+                        <div className="painel-contatos-header">
+                            <h2>📬 Mensagens Recebidas pelo Fale Conosco</h2>
+                            <p>Responda as solicitações dos visitantes ou marque como concluídas.</p>
+                        </div>
 
-                                    <div className="painel-card-corpo">
-                                        <h3>{ESPECIE_EMOJI[animal.especie]} {animal.nome}</h3>
-                                        <p className="painel-card-info">
-                                            {[animal.raca, animal.idade, animal.sexo === 'macho' ? '♂ Macho' : '♀ Fêmea'].filter(Boolean).join(' • ')}
-                                        </p>
-                                        {(animal.cidade || animal.estado) && (
-                                            <p className="painel-card-local">📍 {[animal.cidade, animal.estado].filter(Boolean).join(' - ')}</p>
-                                        )}
-                                        {isAdmin && (
-                                            <p className="painel-card-dono" title={animal.email_dono}>
-                                                👤 {ehDono ? 'Cadastrado por você' : `Cadastrado por ${animal.nome_dono}`}
-                                            </p>
-                                        )}
+                        {contatos.length === 0 ? (
+                            <div className="painel-vazio">
+                                <span>✉️</span>
+                                <p>Nenhuma mensagem de contato recebida até o momento.</p>
+                            </div>
+                        ) : (
+                            <div className="painel-contatos-lista">
+                                {contatos.map(item => (
+                                    <div key={item.id} className={`contato-card ${item.lida ? 'lida' : 'nova'}`}>
+                                        <div className="contato-card-topo">
+                                            <div>
+                                                <span className="contato-card-assunto">📌 {item.assunto}</span>
+                                                <h4 className="contato-card-nome">{item.nome}</h4>
+                                                <a href={`mailto:${item.email}`} className="contato-card-email">
+                                                    ✉️ {item.email}
+                                                </a>
+                                            </div>
+                                            <div className="contato-card-meta">
+                                                <span className="contato-card-data">
+                                                    {new Date(item.criado_em).toLocaleString('pt-BR')}
+                                                </span>
+                                                {!item.lida && <span className="tag-nova">Nova</span>}
+                                            </div>
+                                        </div>
 
-                                        <div className="painel-card-acoes">
-                                            {animal.status !== 'adotado' ? (
+                                        <div className="contato-card-mensagem">
+                                            <p>{item.mensagem}</p>
+                                        </div>
+
+                                        <div className="contato-card-acoes">
+                                            <a
+                                                href={`mailto:${item.email}?subject=Re:%20${encodeURIComponent(item.assunto)}%20-%20SalvaPet`}
+                                                className="btn btn-primario btn-sm"
+                                            >
+                                                ✉️ Responder por E-mail
+                                            </a>
+                                            {!item.lida && (
                                                 <button
-                                                    id={`btn-adotado-${animal.id}`}
-                                                    className="acao-btn acao-adotado"
-                                                    disabled={ocupado}
-                                                    onClick={() => alterarStatus(animal, 'adotado')}
+                                                    className="btn btn-secundario btn-sm"
+                                                    onClick={() => marcarMensagemLida(item.id)}
                                                 >
-                                                    {ocupado ? '...' : '💛 Marcar como adotado'}
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    id={`btn-disponivel-${animal.id}`}
-                                                    className="acao-btn acao-reverter"
-                                                    disabled={ocupado}
-                                                    onClick={() => alterarStatus(animal, 'disponivel')}
-                                                >
-                                                    {ocupado ? '...' : '↩️ Voltar para adoção'}
+                                                    ✓ Marcar como Lida
                                                 </button>
                                             )}
-                                            <button
-                                                id={`btn-excluir-${animal.id}`}
-                                                className="acao-btn acao-excluir"
-                                                disabled={ocupado}
-                                                onClick={() => setAnimalExcluir(animal)}
-                                                aria-label={`Excluir ${animal.nome}`}
-                                            >
-                                                🗑️ Excluir
-                                            </button>
                                         </div>
                                     </div>
-                                </article>
-                            );
-                        })}
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

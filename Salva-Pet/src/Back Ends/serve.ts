@@ -379,6 +379,77 @@ app.get('/api/mensagens/:usuario_id', async (req: Request, res: Response) => {
     }
 });
 
+// ============================================
+// ROTAS DE CONTATO / FALE CONOSCO
+// ============================================
+
+// Garante que a tabela contatos exista
+async function garantirTabelaContatos() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS contatos (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(120) NOT NULL,
+            email VARCHAR(180) NOT NULL,
+            assunto VARCHAR(100) NOT NULL,
+            mensagem TEXT NOT NULL,
+            lida BOOLEAN DEFAULT FALSE,
+            criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB;
+    `);
+}
+
+// Enviar mensagem de contato (pública)
+app.post('/api/contato', async (req: Request, res: Response) => {
+    const { nome, email, assunto, mensagem } = req.body;
+
+    if (!nome || !email || !assunto || !mensagem) {
+        return res.status(400).json({ mensagem: 'Por favor, preencha todos os campos obrigatórios.' });
+    }
+
+    try {
+        await garantirTabelaContatos();
+        const [result]: any = await pool.query(
+            'INSERT INTO contatos (nome, email, assunto, mensagem) VALUES (?, ?, ?, ?)',
+            [nome.trim(), email.trim(), assunto.trim(), mensagem.trim()]
+        );
+        res.status(201).json({
+            id: result.insertId,
+            mensagem: 'Mensagem enviada com sucesso! Nossa equipe entrará em contato em breve. 🐾'
+        });
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao enviar mensagem. Tente novamente mais tarde.', erro: error });
+    }
+});
+
+// Listar mensagens de contato (Apenas Administrador)
+app.get('/api/contato', async (req: Request, res: Response) => {
+    try {
+        const usuario = await obterUsuarioLogado(req);
+        if (!usuario || usuario.perfil !== 'admin') {
+            return res.status(403).json({ mensagem: 'Apenas administradores podem visualizar as mensagens de contato.' });
+        }
+        await garantirTabelaContatos();
+        const [rows] = await pool.query('SELECT * FROM contatos ORDER BY criado_em DESC');
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao carregar mensagens de contato', erro: error });
+    }
+});
+
+// Marcar mensagem de contato como lida (Apenas Administrador)
+app.patch('/api/contato/:id/lida', async (req: Request, res: Response) => {
+    try {
+        const usuario = await obterUsuarioLogado(req);
+        if (!usuario || usuario.perfil !== 'admin') {
+            return res.status(403).json({ mensagem: 'Acesso negado.' });
+        }
+        await pool.query('UPDATE contatos SET lida = TRUE WHERE id = ?', [req.params.id]);
+        res.json({ mensagem: 'Mensagem marcada como lida!' });
+    } catch (error) {
+        res.status(500).json({ mensagem: 'Erro ao atualizar mensagem', erro: error });
+    }
+});
+
 // Estatísticas gerais
 app.get('/api/estatisticas', async (_req: Request, res: Response) => {
     try {
