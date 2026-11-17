@@ -1,0 +1,166 @@
+/* ============================================
+   Contato Page Styles
+   ============================================ */
+
+.contato-banner {
+  background: linear-gradient(135deg, var(--amarelo) 0%, #f5d000 100%);
+  padding: 50px 0;
+  text-align: center;
+}
+
+.contato-banner h1 {
+  font-size: 2.4rem;
+  color: var(--marrom-escuro);
+  margin-bottom: 8px;
+}
+
+.contato-banner p {
+  color: var(--marrom-claro);
+  font-size: 1.1rem;
+}
+
+.contato-content {
+  display: flex;
+  gap: 30px;
+  padding-top: 40px;
+  padding-bottom: 60px;
+  align-items: flex-start;
+}
+
+/* Info */
+.contato-info {
+  flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 100px;
+}
+
+.contato-info-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--sombra-suave);
+}
+
+.contato-info-card h3 {
+  color: var(--marrom);
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--amarelo-claro);
+}
+
+.contato-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.contato-item:last-child {
+  margin-bottom: 0;
+}
+
+.contato-icone {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.contato-item strong {
+  color: var(--marrom-escuro);
+  font-size: 0.92rem;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.contato-item p {
+  color: var(--texto-secundario);
+  font-size: 0.88rem;
+}
+
+.contato-social {
+  background: var(--amarelo-claro);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.contato-social h4 {
+  color: var(--marrom);
+  margin-bottom: 14px;
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.social-link {
+  display: block;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-sm);
+  color: var(--marrom);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: var(--transicao);
+}
+
+.social-link:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(4px);
+}
+
+/* Form */
+.contato-form {
+  flex: 1;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: var(--sombra-suave);
+}
+
+.contato-form h3 {
+  color: var(--marrom);
+  font-size: 1.3rem;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--amarelo-claro);
+}
+
+.contato-form .form-grupo {
+  margin-bottom: 18px;
+}
+
+.contato-form .form-grupo label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--marrom);
+  margin-bottom: 6px;
+}
+
+.contato-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.contato-form .btn-submit {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .contato-content {
+    flex-direction: column;
+  }
+
+  .contato-info {
+    flex: 0 0 auto;
+    position: static;
+  }
+}
