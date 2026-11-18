@@ -18,8 +18,6 @@ Plataforma web full-stack para adoção e doação responsável de animais de es
 A aplicação está hospedada e integrada ao banco de dados **MySQL** no **Railway**:
 
 - **🔗 Site Principal:** [https://salvapet-web-production.up.railway.app](https://salvapet-web-production.up.railway.app)
-- **👑 Painel Administrativo:** [https://salvapet-web-production.up.railway.app/admin](https://salvapet-web-production.up.railway.app/admin)
-- **🔑 Login:** [https://salvapet-web-production.up.railway.app/login](https://salvapet-web-production.up.railway.app/login)
 
 ---
 
@@ -106,12 +104,6 @@ npm run dev
 | `npm run build` | Compila o TypeScript e gera o bundle de produção na pasta `dist/` |
 | `npm run preview` | Visualiza localmente a versão de produção gerada pelo build |
 | `npm run lint` | Executa a verificação estática de código com ESLint |
-
-### Credenciais de Acesso (Administrador Padrão)
-Para acessar o painel administrativo em `http://localhost:5173/admin` ou fazer login em `http://localhost:5173/login`:
-
-- **E-mail:** `admin@salvapet.com`
-- **Senha:** `admin123`
 
 ---
 

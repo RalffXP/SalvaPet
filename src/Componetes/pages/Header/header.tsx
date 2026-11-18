@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './header.css';
 
 interface Usuario {
@@ -13,6 +13,7 @@ function Header() {
     const [menuAberto, setMenuAberto] = useState(false);
     const [usuario, setUsuario] = useState<Usuario | null>(null);
     const location = useLocation();
+    const navigate = useNavigate();
 
     const carregarUsuario = () => {
         const salvo = localStorage.getItem('usuario');
@@ -37,6 +38,10 @@ function Header() {
         localStorage.removeItem('usuario');
         setUsuario(null);
         setMenuAberto(false);
+        window.dispatchEvent(new Event('usuario-atualizado'));
+        if (location.pathname === '/admin') {
+            navigate('/login');
+        }
     };
 
     const isActive = (path: string) => location.pathname === path;
@@ -95,13 +100,15 @@ function Header() {
                     >
                         📧 Contato
                     </Link>
-                    <Link
-                        to="/admin"
-                        className={`nav-link ${isActive('/admin') ? 'ativo' : ''}`}
-                        onClick={() => setMenuAberto(false)}
-                    >
-                        👑 Admin
-                    </Link>
+                    {usuario?.tipo === 'admin' && (
+                        <Link
+                            to="/admin"
+                            className={`nav-link ${isActive('/admin') ? 'ativo' : ''}`}
+                            onClick={() => setMenuAberto(false)}
+                        >
+                            👑 Painel Admin
+                        </Link>
+                    )}
                     {usuario ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '8px' }}>
                             <Link

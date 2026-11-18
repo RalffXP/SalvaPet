@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import './Admin.css';
 
 interface Animal {
@@ -62,7 +62,19 @@ const usuarioInicial: Omit<Usuario, 'id'> = {
     tipo: 'ambos',
 };
 
+function verificarAdmin(): boolean {
+    try {
+        const salvo = localStorage.getItem('usuario');
+        if (!salvo) return false;
+        const user = JSON.parse(salvo);
+        return user?.tipo === 'admin';
+    } catch {
+        return false;
+    }
+}
+
 function Admin() {
+    const [isAdmin, setIsAdmin] = useState<boolean>(() => verificarAdmin());
     const [abaAtiva, setAbaAtiva] = useState<'animais' | 'usuarios'>('animais');
     const [animais, setAnimais] = useState<Animal[]>([]);
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -111,8 +123,17 @@ function Admin() {
     };
 
     useEffect(() => {
-        carregarDados();
+        const checarSessao = () => setIsAdmin(verificarAdmin());
+        window.addEventListener('usuario-atualizado', checarSessao);
+        if (verificarAdmin()) {
+            carregarDados();
+        }
+        return () => window.removeEventListener('usuario-atualizado', checarSessao);
     }, []);
+
+    if (!isAdmin) {
+        return <Navigate to="/login" replace />;
+    }
 
     // ============================================
     // HANDLERS DE ANIMAIS
