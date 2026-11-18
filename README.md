@@ -1,6 +1,7 @@
 # 🐾 SalvaPet
 
-![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-fad817?style=for-the-badge)
+[![Deploy Online](https://img.shields.io/badge/Deploy-Online%20no%20Railway-2ecc71?style=for-the-badge&logo=railway&logoColor=white)](https://salvapet-web-production.up.railway.app)
+![Status](https://img.shields.io/badge/Status-Em%20Produ%C3%A7%C3%A3o-fad817?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
@@ -9,6 +10,16 @@
 ![License](https://img.shields.io/badge/Licen%C3%A7a-MIT-2ecc71?style=for-the-badge)
 
 Plataforma web full-stack para adoção e doação responsável de animais de estimação. O **SalvaPet** conecta tutores, doadores, ONGs e adotantes em um ambiente intuitivo, facilitando a busca por pets, o contato direto via WhatsApp e o gerenciamento administrativo da plataforma.
+
+---
+
+## 🌐 Acesso Online (Produção)
+
+A aplicação está hospedada e integrada ao banco de dados **MySQL** no **Railway**:
+
+- **🔗 Site Principal:** [https://salvapet-web-production.up.railway.app](https://salvapet-web-production.up.railway.app)
+- **👑 Painel Administrativo:** [https://salvapet-web-production.up.railway.app/admin](https://salvapet-web-production.up.railway.app/admin)
+- **🔑 Login:** [https://salvapet-web-production.up.railway.app/login](https://salvapet-web-production.up.railway.app/login)
 
 ---
 
