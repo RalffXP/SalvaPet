@@ -32,19 +32,19 @@ function Home() {
 
     useEffect(() => {
         // Buscar animais em destaque
-        fetch('http://localhost:3000/api/animais?status=disponivel')
+        fetch('/api/animais?status=disponivel')
             .then(res => res.json())
             .then(data => setAnimaisDestaque(Array.isArray(data) ? data.slice(0, 3) : []))
             .catch(() => setAnimaisDestaque([]));
 
         // Buscar avaliações
-        fetch('http://localhost:3000/api/avaliacoes')
+        fetch('/api/avaliacoes')
             .then(res => res.json())
             .then(data => setAvaliacoes(Array.isArray(data) ? data.slice(0, 3) : []))
             .catch(() => setAvaliacoes([]));
 
         // Buscar estatísticas
-        fetch('http://localhost:3000/api/estatisticas')
+        fetch('/api/estatisticas')
             .then(res => res.json())
             .then(data => setStats(data))
             .catch(() => {});

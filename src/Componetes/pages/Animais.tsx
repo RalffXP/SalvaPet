@@ -50,7 +50,7 @@ function Animais() {
             if (filtros.sexo) params.append('sexo', filtros.sexo);
             if (filtros.busca) params.append('busca', filtros.busca);
 
-            const res = await fetch(`http://localhost:3000/api/animais?${params.toString()}`);
+            const res = await fetch(`/api/animais?${params.toString()}`);
             const data = await res.json();
             setAnimais(Array.isArray(data) ? data : animaisFallback);
         } catch {

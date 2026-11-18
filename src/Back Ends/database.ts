@@ -8,12 +8,17 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-export const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'salvapet',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+const connectionUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
+
+export const pool = connectionUrl
+    ? mysql.createPool(connectionUrl)
+    : mysql.createPool({
+          host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
+          port: Number(process.env.MYSQLPORT || process.env.DB_PORT || 3306),
+          user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+          password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
+          database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'salvapet',
+          waitForConnections: true,
+          connectionLimit: 10,
+          queueLimit: 0,
+      });

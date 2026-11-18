@@ -29,7 +29,7 @@ function Login() {
         if (isLogin) {
             // Login
             try {
-                const res = await fetch('http://localhost:3000/api/login', {
+                const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: formData.email, senha: formData.senha })
@@ -77,7 +77,7 @@ function Login() {
             }
 
             try {
-                const res = await fetch('http://localhost:3000/api/usuarios', {
+                const res = await fetch('/api/usuarios', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)

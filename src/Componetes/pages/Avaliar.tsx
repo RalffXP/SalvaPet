@@ -25,7 +25,7 @@ function Avaliar() {
 
     const carregarAvaliacoes = async () => {
         try {
-            const res = await fetch('http://localhost:3000/api/avaliacoes');
+            const res = await fetch('/api/avaliacoes');
             const data = await res.json();
             setAvaliacoes(Array.isArray(data) ? data : []);
         } catch {
@@ -39,7 +39,7 @@ function Avaliar() {
 
     const carregarMedia = async () => {
         try {
-            const res = await fetch('http://localhost:3000/api/avaliacoes/media');
+            const res = await fetch('/api/avaliacoes/media');
             const data = await res.json();
             setMedia(data);
         } catch {
@@ -56,7 +56,7 @@ function Avaliar() {
         }
 
         try {
-            const res = await fetch('http://localhost:3000/api/avaliacoes', {
+            const res = await fetch('/api/avaliacoes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nota, comentario })

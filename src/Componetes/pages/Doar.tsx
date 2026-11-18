@@ -37,7 +37,7 @@ function Doar() {
         }
 
         try {
-            const res = await fetch('http://localhost:3000/api/animais', {
+            const res = await fetch('/api/animais', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...formData, usuario_id: 1 })

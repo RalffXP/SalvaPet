@@ -94,8 +94,8 @@ function Admin() {
     const carregarDados = async () => {
         try {
             const [resAnimais, resUsuarios] = await Promise.all([
-                fetch('http://localhost:3000/api/animais'),
-                fetch('http://localhost:3000/api/usuarios'),
+                fetch('/api/animais'),
+                fetch('/api/usuarios'),
             ]);
             if (resAnimais.ok) {
                 const dataA = await resAnimais.json();
@@ -151,8 +151,8 @@ function Admin() {
         e.preventDefault();
         try {
             const url = animalEditandoId
-                ? `http://localhost:3000/api/animais/${animalEditandoId}`
-                : 'http://localhost:3000/api/animais';
+                ? `/api/animais/${animalEditandoId}`
+                : '/api/animais';
             const method = animalEditandoId ? 'PUT' : 'POST';
 
             const res = await fetch(url, {
@@ -201,8 +201,8 @@ function Admin() {
         e.preventDefault();
         try {
             const url = usuarioEditandoId
-                ? `http://localhost:3000/api/usuarios/${usuarioEditandoId}`
-                : 'http://localhost:3000/api/usuarios';
+                ? `/api/usuarios/${usuarioEditandoId}`
+                : '/api/usuarios';
             const method = usuarioEditandoId ? 'PUT' : 'POST';
 
             const res = await fetch(url, {
@@ -232,7 +232,7 @@ function Admin() {
         const { tipo, id } = confirmacaoExclusao;
         try {
             const endpoint = tipo === 'animal' ? `animais/${id}` : `usuarios/${id}`;
-            const res = await fetch(`http://localhost:3000/api/${endpoint}`, {
+            const res = await fetch(`/api/${endpoint}`, {
                 method: 'DELETE',
             });
             if (res.ok) {

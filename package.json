@@ -6,9 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "start": "node \"src/Back Ends/serve.ts\"",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "npx tsx watch \"src/Back Ends/serve.ts\""
+    "server": "node --watch \"src/Back Ends/serve.ts\""
+  },
+  "engines": {
+    "node": ">=22.6.0"
   },
   "dependencies": {
     "cors": "^2.8.6",
