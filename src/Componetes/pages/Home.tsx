@@ -177,10 +177,6 @@ function Home() {
                                         <span className="animal-badge-especie">
                                             {animal.especie === 'cachorro' ? '🐕' : animal.especie === 'gato' ? '🐱' : '🐾'}
                                         </span>
-                                        <div className="acp-badges-topo">
-                                            {Boolean(animal.vacinado) && <span className="acp-badge-vacina">✓ Vacinado</span>}
-                                            {!Boolean(animal.castrado) && <span className="acp-badge-nao-castrado">Não castrado</span>}
-                                        </div>
                                     </div>
                                     <div className="animal-info">
                                         <h3 className="animal-nome">{animal.nome}</h3>

@@ -161,10 +161,11 @@ function Animais() {
                                     <span className="acp-especie">
                                         {animal.especie === 'cachorro' ? '🐕' : animal.especie === 'gato' ? '🐱' : '🐾'}
                                     </span>
-                                    <div className="acp-badges-topo">
-                                        {Boolean(animal.vacinado) && <span className="acp-badge-vacina">✓ Vacinado</span>}
-                                        {!Boolean(animal.castrado) && <span className="acp-badge-nao-castrado">Não castrado</span>}
-                                    </div>
+                                    {Boolean(animal.vacinado) && (
+                                        <div className="acp-badges-topo">
+                                            <span className="acp-badge-vacina">✓ Vacinado</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="acp-info">
                                     <h3>{animal.nome}</h3>
@@ -203,10 +204,6 @@ function Animais() {
                         <div className="modal-content">
                             <div className="modal-img">
                                 <img src={animalSelecionado.imagem_url} alt={animalSelecionado.nome} />
-                                <div className="acp-badges-topo">
-                                    {Boolean(animalSelecionado.vacinado) && <span className="acp-badge-vacina">✓ Vacinado</span>}
-                                    {!Boolean(animalSelecionado.castrado) && <span className="acp-badge-nao-castrado">Não castrado</span>}
-                                </div>
                             </div>
                             <div className="modal-info">
                                 <h2>{animalSelecionado.nome}</h2>
