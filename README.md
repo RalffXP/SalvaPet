@@ -21,6 +21,14 @@ A aplicação está hospedada e integrada ao banco de dados **MySQL** no **Railw
 
 ---
 
+## 🌐 Acesso Online (Produção)
+
+A aplicação está hospedada e integrada ao banco de dados **MySQL** no **Railway**:
+
+- **🔗 Site Principal:** [https://salvapet-web-production.up.railway.app](https://salvapet-web-production.up.railway.app)
+
+---
+
 ## ✨ Funcionalidades
 
 - **Catálogo de Adoção (`/animais`):** Listagem de animais com filtros por nome, raça, espécie (`cachorro`, `gato`, `outro`), porte (`pequeno`, `medio`, `grande`) e sexo (`macho`, `femea`), além de modal de detalhes e botão de contato direto via WhatsApp com o tutor.

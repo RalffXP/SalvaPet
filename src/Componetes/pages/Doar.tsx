@@ -27,6 +27,46 @@ function Doar() {
         }));
     };
 
+    const handleImagemUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxDim = 900;
+                let width = img.width;
+                let height = img.height;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    setFormData(prev => ({ ...prev, imagem_url: dataUrl }));
+                } else {
+                    setFormData(prev => ({ ...prev, imagem_url: String(reader.result) }));
+                }
+            };
+            img.onerror = () => {
+                setFormData(prev => ({ ...prev, imagem_url: String(reader.result) }));
+            };
+            img.src = String(reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -176,8 +216,26 @@ function Doar() {
                         </div>
 
                         <div className="form-grupo form-full">
-                            <label htmlFor="imagem_url">URL da foto</label>
-                            <input id="imagem_url" name="imagem_url" type="url" placeholder="https://exemplo.com/foto.jpg" value={formData.imagem_url} onChange={handleChange} />
+                            <label htmlFor="imagem_arquivo">Foto do animal (arquivo de imagem)</label>
+                            <input
+                                id="imagem_arquivo"
+                                name="imagem_arquivo"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImagemUpload}
+                            />
+                            {formData.imagem_url && (
+                                <div className="upload-preview-wrapper">
+                                    <img src={formData.imagem_url} alt="Pré-visualização do animal" className="upload-preview-img" />
+                                    <button
+                                        type="button"
+                                        className="btn-remover-img"
+                                        onClick={() => setFormData(prev => ({ ...prev, imagem_url: '' }))}
+                                    >
+                                        ✕ Remover foto
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="form-grupo form-full">

@@ -161,7 +161,10 @@ function Animais() {
                                     <span className="acp-especie">
                                         {animal.especie === 'cachorro' ? '🐕' : animal.especie === 'gato' ? '🐱' : '🐾'}
                                     </span>
-                                    {animal.vacinado && <span className="acp-badge-vacina">✓ Vacinado</span>}
+                                    <div className="acp-badges-topo">
+                                        {Boolean(animal.vacinado) && <span className="acp-badge-vacina">✓ Vacinado</span>}
+                                        {!Boolean(animal.castrado) && <span className="acp-badge-nao-castrado">Não castrado</span>}
+                                    </div>
                                 </div>
                                 <div className="acp-info">
                                     <h3>{animal.nome}</h3>
@@ -169,7 +172,11 @@ function Animais() {
                                     <div className="acp-tags">
                                         <span className="tag">{animal.porte === 'pequeno' ? 'Pequeno' : animal.porte === 'medio' ? 'Médio' : 'Grande'}</span>
                                         <span className="tag">{animal.sexo === 'macho' ? '♂ Macho' : '♀ Fêmea'}</span>
-                                        {animal.castrado && <span className="tag tag-verde">Castrado</span>}
+                                        {Boolean(animal.castrado) ? (
+                                            <span className="tag tag-verde">Castrado</span>
+                                        ) : (
+                                            <span className="tag tag-vermelha">Não castrado</span>
+                                        )}
                                     </div>
                                     <p className="acp-local">📍 {animal.cidade} - {animal.estado}</p>
                                     <button className="btn btn-primario btn-card">Ver detalhes</button>
@@ -196,17 +203,25 @@ function Animais() {
                         <div className="modal-content">
                             <div className="modal-img">
                                 <img src={animalSelecionado.imagem_url} alt={animalSelecionado.nome} />
+                                <div className="acp-badges-topo">
+                                    {Boolean(animalSelecionado.vacinado) && <span className="acp-badge-vacina">✓ Vacinado</span>}
+                                    {!Boolean(animalSelecionado.castrado) && <span className="acp-badge-nao-castrado">Não castrado</span>}
+                                </div>
                             </div>
                             <div className="modal-info">
                                 <h2>{animalSelecionado.nome}</h2>
                                 <p className="modal-raca">{animalSelecionado.raca} • {animalSelecionado.idade}</p>
                                 
                                 <div className="modal-tags">
-                                    <span className="tag">{animalSelecionado.especie === 'cachorro' ? '🐕 Cachorro' : '🐱 Gato'}</span>
+                                    <span className="tag">{animalSelecionado.especie === 'cachorro' ? '🐕 Cachorro' : animalSelecionado.especie === 'gato' ? '🐱 Gato' : '🐾 Outro'}</span>
                                     <span className="tag">{animalSelecionado.porte === 'pequeno' ? 'Pequeno' : animalSelecionado.porte === 'medio' ? 'Médio' : 'Grande'}</span>
                                     <span className="tag">{animalSelecionado.sexo === 'macho' ? '♂ Macho' : '♀ Fêmea'}</span>
-                                    {animalSelecionado.vacinado && <span className="tag tag-verde">✓ Vacinado</span>}
-                                    {animalSelecionado.castrado && <span className="tag tag-verde">✓ Castrado</span>}
+                                    {Boolean(animalSelecionado.vacinado) && <span className="tag tag-verde">✓ Vacinado</span>}
+                                    {Boolean(animalSelecionado.castrado) ? (
+                                        <span className="tag tag-verde">✓ Castrado</span>
+                                    ) : (
+                                        <span className="tag tag-vermelha">Não castrado</span>
+                                    )}
                                 </div>
 
                                 <h4>Sobre</h4>

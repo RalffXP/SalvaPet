@@ -12,7 +12,7 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '15mb' }));
 
 // ============================================
 // DADOS EM MEMÓRIA (FALLBACK CASO MYSQL OFFLINE)
@@ -116,8 +116,11 @@ app.get('/api/animais', async (req: Request, res: Response) => {
 
         query += ' ORDER BY a.criado_em DESC';
 
-        const [rows] = await pool.query(query, params);
-        res.json(rows);
+        const [rows]: any = await pool.query(query, params);
+        const normalizados = Array.isArray(rows)
+            ? rows.map((r: any) => ({ ...r, vacinado: Boolean(r.vacinado), castrado: Boolean(r.castrado) }))
+            : rows;
+        res.json(normalizados);
     } catch {
         let lista = animaisMemoria.map(enriquecerAnimal);
         if (req.query.especie) lista = lista.filter(a => a.especie === req.query.especie);
@@ -570,7 +573,7 @@ async function inicializarBanco() {
                 porte ENUM('pequeno', 'medio', 'grande') DEFAULT 'medio',
                 sexo ENUM('macho', 'femea') NOT NULL,
                 descricao TEXT,
-                imagem_url VARCHAR(500),
+                imagem_url LONGTEXT,
                 cidade VARCHAR(100),
                 estado VARCHAR(2),
                 vacinado BOOLEAN DEFAULT FALSE,
@@ -609,6 +612,8 @@ async function inicializarBanco() {
                 FOREIGN KEY (animal_id) REFERENCES animais(id) ON DELETE SET NULL
             ) ENGINE=InnoDB;
         `);
+
+        await pool.query('ALTER TABLE animais MODIFY COLUMN imagem_url LONGTEXT');
 
         const [usersCount]: any = await pool.query('SELECT COUNT(*) as total FROM usuarios');
         if (usersCount[0].total === 0) {

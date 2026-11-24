@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS animais (
   porte ENUM('pequeno', 'medio', 'grande') DEFAULT 'medio',
   sexo ENUM('macho', 'femea') NOT NULL,
   descricao TEXT,
-  imagem_url VARCHAR(500),
+  imagem_url LONGTEXT,
   cidade VARCHAR(100),
   estado VARCHAR(2),
   vacinado BOOLEAN DEFAULT FALSE,

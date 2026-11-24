@@ -215,6 +215,39 @@
   margin-top: 24px;
 }
 
+.upload-preview-wrapper {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-section);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e8dcc0;
+}
+
+.upload-preview-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--amarelo);
+}
+
+.btn-remover-img {
+  background: #fdecea;
+  color: #c0392b;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.btn-remover-img:hover {
+  background: #e74c3c;
+  color: #ffffff;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .doar-content {

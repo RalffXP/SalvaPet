@@ -168,6 +168,46 @@ function Admin() {
         setModalAnimalAberto(true);
     };
 
+    const handleImagemAnimalUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxDim = 900;
+                let width = img.width;
+                let height = img.height;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    setFormAnimal(prev => ({ ...prev, imagem_url: dataUrl }));
+                } else {
+                    setFormAnimal(prev => ({ ...prev, imagem_url: String(reader.result) }));
+                }
+            };
+            img.onerror = () => {
+                setFormAnimal(prev => ({ ...prev, imagem_url: String(reader.result) }));
+            };
+            img.src = String(reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
     const salvarAnimal = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -434,11 +474,11 @@ function Admin() {
                                         </td>
                                         <td>
                                             <div className="td-badges-saude">
-                                                <span className={`mini-badge ${animal.vacinado ? 'sim' : 'nao'}`}>
-                                                    {animal.vacinado ? '✓ Vacinado' : '✗ Não vacinado'}
+                                                <span className={`mini-badge ${Boolean(animal.vacinado) ? 'sim' : 'nao'}`}>
+                                                    {Boolean(animal.vacinado) ? '✓ Vacinado' : '✗ Não vacinado'}
                                                 </span>
-                                                <span className={`mini-badge ${animal.castrado ? 'sim' : 'nao'}`}>
-                                                    {animal.castrado ? '✓ Castrado' : '✗ Não castrado'}
+                                                <span className={`mini-badge ${Boolean(animal.castrado) ? 'sim' : 'nao-castrado'}`}>
+                                                    {Boolean(animal.castrado) ? '✓ Castrado' : 'Não castrado'}
                                                 </span>
                                             </div>
                                         </td>
@@ -691,13 +731,24 @@ function Admin() {
                                 </div>
 
                                 <div className="form-grupo form-col-full">
-                                    <label>URL da Imagem</label>
+                                    <label>Foto do Animal (Upload de Imagem)</label>
                                     <input
-                                        type="url"
-                                        placeholder="https://exemplo.com/foto.jpg"
-                                        value={formAnimal.imagem_url}
-                                        onChange={e => setFormAnimal({ ...formAnimal, imagem_url: e.target.value })}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImagemAnimalUpload}
                                     />
+                                    {formAnimal.imagem_url && (
+                                        <div className="admin-upload-preview">
+                                            <img src={formAnimal.imagem_url} alt="Pré-visualização" />
+                                            <button
+                                                type="button"
+                                                className="btn-acao excluir"
+                                                onClick={() => setFormAnimal({ ...formAnimal, imagem_url: '' })}
+                                            >
+                                                ✕ Remover imagem
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="form-grupo form-col-full">

@@ -278,6 +278,30 @@
   color: #7f8c8d;
 }
 
+.mini-badge.nao-castrado {
+  background: #e74c3c;
+  color: #ffffff;
+}
+
+.admin-upload-preview {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-section);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e8dcc0;
+}
+
+.admin-upload-preview img {
+  width: 68px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--amarelo);
+}
+
 /* Status Pill */
 .status-pill {
   display: inline-block;
